@@ -1,0 +1,33 @@
+id: GI imputation pipeline                                             
+name: GI imputation pipeline                                       
+version: 0.1                           
+description: a cloudgene config for tst1.nf
+author: Vlad Tuzov                     
+website: https://github.com/tuzov/nf-imputation
+
+workflow:                                                                      
+  steps:                               
+    - name: Print all input file
+      cmd: /bin/ls $vcfdir
+      stdout: true
+    
+    - name: Running nf-tst1
+      type: nextflow                                                           
+      script: tst1.nf                                                          
+      params.project: ${job_id}
+
+  inputs: 
+
+    - id: vcfdir 
+      description: upload your input file
+      details: upload at least one file
+      type: local_folder                     
+      required: true                                                           
+
+  outputs:                                                                     
+
+    - id: outdir                                                               
+      description: imputation outputs                                            
+      type: local_folder
+      download: true
+      zip: true
