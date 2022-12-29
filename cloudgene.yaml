@@ -1,9 +1,9 @@
 id: GI imputation pipeline                                             
 name: GI imputation pipeline                                       
 version: 0.1                           
-description: a cloudgene config for tst1.nf
+description: a cloudgene config for tst1.nf Imputation pipeline
 author: Vlad Tuzov                     
-website: https://github.com/tuzov/nf-imputation
+website: https://github.com/tuzov/nf-tst
 
 workflow:                                                                      
   steps:                               

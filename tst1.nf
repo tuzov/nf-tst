@@ -1,9 +1,18 @@
+// Imputation Pipeline developed by University of Tartu Genomics Institute
+// authors: Viktorija Kukushkina and Georgi Hudjashov
+// modified for cloudgene by Vladislav Tuzov
+//
+//
+
 nextflow.enable.dsl=2
 
+// inputs
 params.input = "./chr*.vcf.gz"
 params.vcffiles = params.vcfdir + params.input
 vcf_ch = Channel.fromPath(params.vcffiles)
 
+// outputs
+params.out_dir = "/impute-data/outputs"
 
 // references
 params.ref_dir = '/impute-data/reference/'
@@ -14,7 +23,7 @@ params.eagle_map = 'genetic_map_hg38_withX.txt'
 
 process tabix {
   //module "bcftools/1.16"
-  publishDir "./"
+  //publishDir "./"
   input:
   path vcf
 
@@ -27,7 +36,7 @@ process tabix {
 
 process qc1 {
   //module "bcftools/1.16"
-  publishDir "./"
+  //publishDir "./"
   input:
   path vcf
 
@@ -42,7 +51,7 @@ process qc1 {
 
 process qc2 {
   //module "bcftools/1.16"
-  publishDir "./"
+  //publishDir "./"
 
   input:
   path bcf
@@ -61,7 +70,7 @@ process qc2 {
 
 process qc3 {
   //module "bcftools/1.16"
-  publishDir "./"
+  //publishDir "./"
   input:
   path bcf
 
@@ -77,7 +86,7 @@ process qc3 {
 process qc4 {
   //module "any/plink2/20211217"
   //module "bcftools/1.16"
-  publishDir "./"
+  //publishDir "./"
   input:
   path bcf
 
@@ -94,7 +103,7 @@ process qc4 {
 
 process qc5 {
   //module "bcftools/1.16"
-  publishDir "./", mode: 'copy', overwrite: true
+  //publishDir "./", mode: 'copy', overwrite: true
   input:
   path bcf
 
@@ -112,8 +121,12 @@ process qc5 {
 
 process phasing {
   //module "htslib/1.16"
+
+  // slurm parameters
   cpus 1
-  publishDir "./"
+  //
+
+  //publishDir "./"
 
   input:
   path bcf
@@ -130,24 +143,29 @@ process phasing {
 
 }
 process impute {
-   //module "any/jdk/1.8.0_265"
-   cpus 4
-   memory '8 GB'
-   publishDir "./"
-   input:
-	 val ch
-     path bcf
 
-   output:
-     path "${ch}_IMP.vcf.gz"
+  // slurm parameters
+  cpus 4
+  memory '8 GB'
+  //
 
-   script:
-    """
-    java -Xmx8g -jar "\$BEAGLE" gp=true gt=${bcf} ref=${params.ref_dir}${ch}_dbSNP155_PHASED.vcf.gz map=${params.ref_dir}/plink.${ch}.hg38.map out=${ch}_IMP chrom=${ch} nthreads=${task.cpus}
-	"""
+  //publishDir "./"
+  publishDir "${params.out_dir}"
+
+  input:
+        val ch
+    path bcf
+
+  output:
+    path "${ch}_IMP.vcf.gz"
+
+  script:
+   """
+   java -Xmx8g -jar "\$BEAGLE" gp=true gt=${bcf} ref=${params.ref_dir}${ch}_dbSNP155_PHASED.vcf.gz map=${params.ref_dir}/plink.${ch}.hg38.map out=${ch}_IMP chrom=${ch} nthreads=${task.cpus}
+       """
 
 
-   // """
+  // """
 	//java -Xmx8g -jar ${params.beagle} gp=true gt=${bcf} ref=/gpfs/space/GI/GV/Projects/EGV_hg38/combined/filter/2.2_variant-based-QC/phased/${ch}_dbSNP155_PHASED.vcf.gz map=/gpfs/space/home/a73038/WORK/Imputation_server/Plink_maps/plink.${ch}.GRCh38.map out=${ch}_IMP chrom=${(ch=~/\d{1,2}/)[0]} nthreads=${task.cpus}
 	//"""
 }
