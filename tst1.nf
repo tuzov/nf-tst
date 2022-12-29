@@ -105,7 +105,7 @@ process qc5 {
 
   script:
   """
-  bcftools +fixref ${bcf} -Ob -o ${(bcf =~ /chr\d{1,2}/)[0]}_qc5.bcf -- -f ${params.fasta_ref} -m flip > ${(bcf =~ /chr\d{1,2}/)[0]}_qc5.log 2>&1
+  bcftools +fixref ${bcf} -Ob -o ${(bcf =~ /chr\d{1,2}/)[0]}_qc5.bcf -- -f ${params.ref_dir}${params.fasta_ref} -m flip > ${(bcf =~ /chr\d{1,2}/)[0]}_qc5.log 2>&1
   tabix -f ${(bcf =~ /chr\d{1,2}/)[0]}_qc5.bcf
   """
 }
@@ -143,7 +143,7 @@ process impute {
 
    script:
     """
-    java -Xmx8g -jar "\$BEAGLE" gp=true gt=${bcf} ref=/gpfs/space/GI/GV/Projects/EGV_hg38/combined/filter/2.2_variant-based-QC/phased/${ch}_dbSNP155_PHASED.vcf.gz map=${params.ref_dir}/plink.${ch}.hg38.map out=${ch}_IMP chrom=${ch} nthreads=${task.cpus}
+    java -Xmx8g -jar "\$BEAGLE" gp=true gt=${bcf} ref=${params.ref_dir}${ch}_dbSNP155_PHASED.vcf.gz map=${params.ref_dir}/plink.${ch}.hg38.map out=${ch}_IMP chrom=${ch} nthreads=${task.cpus}
 	"""
 
 
