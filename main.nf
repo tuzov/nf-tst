@@ -12,7 +12,8 @@ params.vcffiles = params.vcfdir + params.input
 vcf_ch = Channel.fromPath(params.vcffiles)
 
 // outputs
-params.out_dir = "/impute-data/outputs"
+params.out_dir = params.outdir
+//params.out_dir = "/impute-data/outputs"
 
 // references
 params.ref_dir = '/impute-data/reference/'
@@ -23,7 +24,7 @@ params.eagle_map = 'genetic_map_hg38_withX.txt'
 
 process tabix {
   //module "bcftools/1.16"
-  //publishDir "./"
+  publishDir "${out_dir}"
   input:
   path vcf
 
@@ -36,7 +37,7 @@ process tabix {
 
 process qc1 {
   //module "bcftools/1.16"
-  //publishDir "./"
+  publishDir "${out_dir}"
   input:
   path vcf
 
@@ -51,7 +52,7 @@ process qc1 {
 
 process qc2 {
   //module "bcftools/1.16"
-  //publishDir "./"
+  publishDir "${out_dir}"
 
   input:
   path bcf
@@ -70,7 +71,7 @@ process qc2 {
 
 process qc3 {
   //module "bcftools/1.16"
-  //publishDir "./"
+  publishDir "${out_dir}"
   input:
   path bcf
 
@@ -86,7 +87,7 @@ process qc3 {
 process qc4 {
   //module "any/plink2/20211217"
   //module "bcftools/1.16"
-  //publishDir "./"
+  publishDir "${out_dir}"
   input:
   path bcf
 
@@ -103,7 +104,7 @@ process qc4 {
 
 process qc5 {
   //module "bcftools/1.16"
-  //publishDir "./", mode: 'copy', overwrite: true
+  publishDir "${out_dir}", mode: 'copy', overwrite: true
   input:
   path bcf
 
@@ -126,7 +127,7 @@ process phasing {
   cpus 1
   //
 
-  //publishDir "./"
+  publishDir "${out_dir}"
 
   input:
   path bcf
@@ -149,11 +150,11 @@ process impute {
   memory '8 GB'
   //
 
-  //publishDir "./"
-  publishDir "${params.out_dir}"
+  publishDir "${out_dir}"
+  //publishDir "${params.out_dir}"
 
   input:
-        val ch
+    val ch
     path bcf
 
   output:
