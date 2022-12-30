@@ -13,7 +13,7 @@ workflow:
     
     - name: Running nf-tst1
       type: nextflow                                                           
-      script: tst1.nf                                                          
+      script: main.nf                                                          
       params.project: ${job_id}
 
   inputs: 
